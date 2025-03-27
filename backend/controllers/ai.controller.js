@@ -18,24 +18,32 @@ const checkSymptoms = async (req, res) => {
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
-A patient reports the following symptoms: ${symptoms}.  
-Provide a **brief and structured** diagnosis with three sections:  
-1]**Common Causes** (Mild to Moderate)  
-2] **Serious Causes** (Emergency or Severe)  
-3]**Rare Possibilities**  
+A patient reports the following symptoms: "${symptoms}".  
+Provide a **structured diagnosis** in the following format:  
 
-For each, mention:  
-- **Condition Name**  
-- **Key Symptoms (Bullet Points, Max 2-3)**  
+**Diagnosis:**  
+Okay, here's a brief diagnostic overview based on the patient's report of "${symptoms}":  
 
-At the end, include:  
-- **Urgent Medical Indicators (Max 5 Points)**  
-- **Disclaimer:** "Consult a doctor for diagnosis."  
-Keep it **short (Max 5-6 lines total)**.
+1] **Common Causes:**  
+- Condition Name: Key Symptoms.  
+
+2] **Serious Causes:**  
+- Condition Name: Key Symptoms.  
+
+3] **Rare Possibilities:**  
+- Condition Name: Key Symptoms.  
+
+**Urgent Medical Indicators:**   
+- List 1 to 3 signs that require immediate medical attention.  
+
+**Disclaimer:** "Consult a doctor for accurate diagnosis."  
+dont give ** or bold
+
+Make sure to keep it **concise (5-6 lines max)**.
 `;
 
     const result = await model.generateContent(prompt);
-    const response = result.response.candidates[0].content.parts[0].text;
+    const response = result.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI.";
 
     return res.status(200).json({
       success: true,
