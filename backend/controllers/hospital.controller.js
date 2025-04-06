@@ -3,27 +3,66 @@ import Hospital from "../models/hospital.model.js";
 // Create a new hospital
 export const createHospital = async (req, res) => {
   try {
-    const { name, address, contact } = req.body;
-
-    const newHospital = new Hospital({
-      name,
-      address,
-      contact,
-    });
-
-    await newHospital.save();
-    res.status(201).json({ message: "Hospital created successfully", newHospital });
+    const hospital = new Hospital(req.body);
+    await hospital.save();
+    res.status(201).json(hospital);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Get all hospitals
 export const getAllHospitals = async (req, res) => {
   try {
-    const hospitals = await Hospital.find();
-    res.json(hospitals);
+    const hospitals = await Hospital.find({ isActive: true });
+    res.status(200).json(hospitals);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get hospital by ID
+export const getHospitalById = async (req, res) => {
+  try {
+    const hospital = await Hospital.findById(req.params.id);
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+    res.status(200).json(hospital);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update hospital
+export const updateHospital = async (req, res) => {
+  try {
+    const hospital = await Hospital.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+    res.status(200).json(hospital);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Delete hospital (soft delete)
+export const deleteHospital = async (req, res) => {
+  try {
+    const hospital = await Hospital.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    );
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found" });
+    }
+    res.status(200).json({ message: "Hospital deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

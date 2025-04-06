@@ -1,9 +1,36 @@
+// backend/routes/appointment.route.js
 import express from "express";
-import { bookAppointment, getAppointmentsByHospital } from "../controllers/appointment.controller.js";
+import {
+  createAppointment,
+  getUserAppointments,
+  getDoctorAppointments,
+  getAppointmentById,
+  updateAppointmentStatus,
+  cancelAppointment,
+  getAllAppointments
+} from "../controllers/appointment.controller.js";
 
 const router = express.Router();
 
-router.post("/book", bookAppointment);
-router.get("/hospital/:hospitalId", getAppointmentsByHospital);
+// Get all appointments (for doctor dashboard without login)
+router.get("/", getAllAppointments);
+
+// Create a new appointment
+router.post("/", createAppointment);
+
+// Get user's appointments
+router.get("/user/:userId", getUserAppointments);
+
+// Get doctor's appointments
+router.get("/doctor/:doctorId", getDoctorAppointments);
+
+// Get appointment by ID
+router.get("/:id", getAppointmentById);
+
+// Update appointment status
+router.put("/:id/status", updateAppointmentStatus);
+
+// Cancel appointment
+router.put("/:id/cancel", cancelAppointment);
 
 export default router;

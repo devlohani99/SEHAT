@@ -1,9 +1,21 @@
 import express from "express";
-import { createHospital, getAllHospitals } from "../controllers/hospital.controller.js";
+import {
+  createHospital,
+  getAllHospitals,
+  getHospitalById,
+  updateHospital,
+  deleteHospital,
+} from "../controllers/hospital.controller.js";
 
 const router = express.Router();
 
-router.post("/create", createHospital);
+// Public routes
 router.get("/", getAllHospitals);
+router.get("/:id", getHospitalById);
+
+// Protected routes (admin only)
+router.post("/", createHospital);
+router.put("/:id", updateHospital);
+router.delete("/:id", deleteHospital);
 
 export default router;
